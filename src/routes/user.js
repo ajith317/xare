@@ -176,23 +176,19 @@ User.prototype.OAuthSignin = function(req, res){
 				newUser.avatar = 'dvs_' + newUser._id;
 				self.saveAvatar(req.body.photoUrl, './src/uploads/avatars/' + newUser.avatar);
 			}*/
-
-			if(!req.body.firstName){
-				res.json(common.getResponses('003', {}));
-				return;
-			}
+			
+			var newUser = {
+				_id: common.getMongoObjectId(),
+				First_Name: req.body.firstName ? req.body.firstName : '',
+				Email_Id: emailAddress,
+				Mobile_Number: mobileNumber,
+				User_Type: common.getUserType(1),
+				isActivated: 1,
+				avatar: fileName,
+				accessToken: [token]
+			};
 
 			self.uploadAvatar(req, res, newUser._id, fileName => {
-				var newUser = {
-					_id: common.getMongoObjectId(),
-					First_Name: req.body.firstName,
-					Email_Id: emailAddress,
-					Mobile_Number: mobileNumber,
-					User_Type: common.getUserType(1),
-					isActivated: 1,
-					avatar: fileName,
-					accessToken: [token]
-				};
 				config.db.insert('user', newUser, (err, result) => {
 					res.json(common.getResponses('020', {accessToken: token}));
 			    });
